@@ -23,10 +23,12 @@ namespace NuCake
         }
 
         [Required]
-        public ITaskItem SourceFile { get; set; }
+        public ITaskItem ReferenceLibrary { get; set; }
 
         [Required]
         public string DestinationFolder { get; set; }
+
+        public ITaskItem[] SourceFiles { get; set; }
 
         public override bool Execute()
         {
@@ -51,21 +53,25 @@ namespace NuCake
         {
             Directory.CreateDirectory(DestinationFolder);
 
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(SourceFile.ItemSpec);
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(ReferenceLibrary.ItemSpec);
 
             var packageBuilder = new PackageBuilder();
 
-            packageBuilder.Id = Path.GetFileNameWithoutExtension(SourceFile.ItemSpec);
+            packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.ItemSpec);
             packageBuilder.Authors.Add(fileVersionInfo.CompanyName.OrDefault(Environment.UserName));
             packageBuilder.Description = fileVersionInfo.FileDescription;
 
-            packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = SourceFile.ItemSpec, Target = "lib" } });
+            packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = ReferenceLibrary.ItemSpec, Target = "lib" } });
+
+            var xmldoc = Path.ChangeExtension(ReferenceLibrary.ItemSpec, ".xml");
+            if (File.Exists(xmldoc))
+                packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = xmldoc, Target = "lib" } });
 
             SemanticVersion version;
             using (var appDomainManager = new AppDomainManager(Path.GetDirectoryName(GetType().Assembly.Location)))
             {
                 var metadata = appDomainManager.CreateInstanceAndUnwrap<AssemblyMetadata>();
-                metadata.LoadMetadata(SourceFile.ItemSpec);
+                metadata.LoadMetadata(ReferenceLibrary.ItemSpec);
 
                 if (String.IsNullOrEmpty(metadata.InformationalVersion) || !SemanticVersion.TryParse(metadata.InformationalVersion, out version))
                     version = SemanticVersion.Parse(fileVersionInfo.FileVersion);
@@ -91,13 +97,39 @@ namespace NuCake
                 packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
             }
 
-            var packageFile = Path.Combine(DestinationFolder, packageBuilder.GetFullName()) + ".nupkg";
-            using (var file = new FileStream(packageFile, FileMode.Create))
+            SavePackage(packageBuilder, ".nupkg", "Package created -> {0}");
+
+            // Now create the symbol package
+
+            if (SourceFiles.Any())
+            {
+                var pdb = Path.ChangeExtension(ReferenceLibrary.ItemSpec, ".pdb");
+                if (File.Exists(pdb))
+                    packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = pdb, Target = "lib" } });
+
+                foreach (var sourceFile in SourceFiles)
+                {
+                    var fullPath = Path.GetFullPath(sourceFile.ItemSpec);
+
+                    if (File.Exists(sourceFile.ItemSpec) && fullPath.StartsWith(Environment.CurrentDirectory))
+                        packageBuilder.PopulateFiles("", new ManifestFile[] {
+                            new ManifestFile() { Source = fullPath, Target = Path.Combine("src", fullPath.Substring(Environment.CurrentDirectory.Length + 1)) }
+                        });
+                }
+
+                SavePackage(packageBuilder, ".symbols.nupkg", "Symbols created -> {0}");
+            }
+        }
+
+        private void SavePackage(PackageBuilder packageBuilder, string filenameSuffix, string logMessage)
+        {
+            var filename = Path.Combine(DestinationFolder, packageBuilder.GetFullName()) + filenameSuffix;
+            using (var file = new FileStream(filename, FileMode.Create))
             {
                 packageBuilder.Save(file);
             }
 
-            Log.LogMessage("Package created -> {0}", packageFile);
+            Log.LogMessage(logMessage, filename);
         }
     }
 }

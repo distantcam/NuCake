@@ -35,10 +35,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="NuCake.targets" />
+    <None Include="NuCake.targets">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Folder\ClassInAFolder.cs" />
+    <Compile Include="MyClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
