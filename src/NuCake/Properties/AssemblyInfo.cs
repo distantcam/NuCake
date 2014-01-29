@@ -20,4 +20,4 @@
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.1.0")]
 [assembly: AssemblyFileVersion("0.1.0")]
-[assembly: AssemblyInformationalVersion("%version3%+branch.%branch%.sha.%githash%")]
+[assembly: AssemblyInformationalVersion("0.1.0-alpha")]
