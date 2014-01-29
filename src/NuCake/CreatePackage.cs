@@ -51,12 +51,13 @@ namespace NuCake
         {
             Directory.CreateDirectory(DestinationFolder);
 
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(SourceFile.ItemSpec);
+
             var packageBuilder = new PackageBuilder();
 
             packageBuilder.Id = Path.GetFileNameWithoutExtension(SourceFile.ItemSpec);
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(SourceFile.ItemSpec);
             packageBuilder.Authors.Add(fileVersionInfo.CompanyName.OrDefault(Environment.UserName));
-            packageBuilder.Description = fileVersionInfo.FileDescription.OrDefault("No Description");
+            packageBuilder.Description = fileVersionInfo.FileDescription;
 
             packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = SourceFile.ItemSpec, Target = "lib" } });
 
@@ -72,8 +73,23 @@ namespace NuCake
                 if (!String.IsNullOrEmpty(metadata.Description))
                     packageBuilder.Description = metadata.Description;
             }
-
             packageBuilder.Version = version;
+
+            if (String.IsNullOrWhiteSpace(packageBuilder.Description))
+            {
+                packageBuilder.Description = "No Description";
+                Log.LogWarning("No description found. Add either a AssemblyTitleAttribute or AssemblyDescriptionAttribute to your project.");
+            }
+
+            if (String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
+            {
+                packageBuilder.Authors.Add(Environment.UserName);
+                Log.LogWarning("No company name found. Add a AssemblyCompanyAttribute to your project.");
+            }
+            else
+            {
+                packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
+            }
 
             var packageFile = Path.Combine(DestinationFolder, packageBuilder.GetFullName()) + ".nupkg";
             using (var file = new FileStream(packageFile, FileMode.Create))
