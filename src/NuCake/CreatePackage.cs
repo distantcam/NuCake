@@ -67,19 +67,12 @@ namespace NuCake
             if (File.Exists(xmldoc))
                 packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = xmldoc, Target = "lib" } });
 
-            SemanticVersion version;
             using (var appDomainManager = new AppDomainManager(Path.GetDirectoryName(GetType().Assembly.Location)))
             {
                 var metadata = appDomainManager.CreateInstanceAndUnwrap<AssemblyMetadata>();
                 metadata.LoadMetadata(ReferenceLibrary.ItemSpec);
-
-                if (String.IsNullOrEmpty(metadata.InformationalVersion) || !SemanticVersion.TryParse(metadata.InformationalVersion, out version))
-                    version = SemanticVersion.Parse(fileVersionInfo.FileVersion);
-
-                if (!String.IsNullOrEmpty(metadata.Description))
-                    packageBuilder.Description = metadata.Description;
+                ApplyToPackageBuilder(packageBuilder, metadata, fileVersionInfo.FileVersion);
             }
-            packageBuilder.Version = version;
 
             if (String.IsNullOrWhiteSpace(packageBuilder.Description))
             {
@@ -119,6 +112,26 @@ namespace NuCake
 
                 SavePackage(packageBuilder, ".symbols.nupkg", "Symbols created -> {0}");
             }
+        }
+
+        public void ApplyToPackageBuilder(PackageBuilder packageBuilder, AssemblyMetadata metadata, string fileVersion)
+        {
+            SemanticVersion version;
+            if (String.IsNullOrEmpty(metadata.InformationalVersion) || !SemanticVersion.TryParse(metadata.InformationalVersion, out version))
+                version = SemanticVersion.Parse(fileVersion);
+            packageBuilder.Version = version;
+
+            if (!String.IsNullOrEmpty(metadata.Description))
+                packageBuilder.Description = metadata.Description;
+
+            if (!String.IsNullOrEmpty(metadata.Title))
+                packageBuilder.Title = metadata.Title;
+
+            if (!String.IsNullOrEmpty(metadata.Copyright))
+                packageBuilder.Copyright = metadata.Copyright;
+
+            if (!String.IsNullOrEmpty(metadata.Culture))
+                packageBuilder.Language = metadata.Culture;
         }
 
         private void SavePackage(PackageBuilder packageBuilder, string filenameSuffix, string logMessage)

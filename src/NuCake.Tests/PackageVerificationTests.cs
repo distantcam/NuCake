@@ -17,7 +17,17 @@ public class PackageVerificationTests
         Assert.Equal("No Description", package.Description);
         Assert.Equal(new SemanticVersion(1, 0, 0, 0), package.Version);
         Assert.Equal(1, package.Authors.Count());
-        //Assert.Equal("SampleProject", package.Authors.First());
+        Assert.Equal(Environment.UserName, package.Authors.First());
+    }
+
+    [Fact]
+    public void TitleAttributeSetsTitle()
+    {
+        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetTitle");
+
+        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+
+        Assert.Equal("TitleSet", package.Title);
     }
 
     [Fact]
@@ -62,6 +72,16 @@ public class PackageVerificationTests
     }
 
     [Fact]
+    public void CopyrightAttributeSetsCopyright()
+    {
+        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetCopyright");
+
+        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+
+        Assert.Equal("Copyright Blah", package.Copyright);
+    }
+
+    [Fact]
     public void InformationalVersionAttributeSetsVersion()
     {
         var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetInformationalVersion");
@@ -69,5 +89,15 @@ public class PackageVerificationTests
         var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0-info.nupkg");
 
         Assert.Equal(new SemanticVersion(1, 0, 0, "info"), package.Version);
+    }
+
+    [Fact]
+    public void CultureAttributeSetsLanguage()
+    {
+        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetCulture");
+
+        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+
+        Assert.Equal("en-AU", package.Language);
     }
 }

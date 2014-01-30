@@ -14,6 +14,9 @@ static class Program
         packageBuilder.Id = "NuCake";
         packageBuilder.Description = "NuCake - Fast simple nuget package creation.";
         packageBuilder.Authors.Add("Cameron MacFarland");
+        packageBuilder.ProjectUrl = new Uri("https://github.com/distantcam/NuCake");
+        packageBuilder.IconUrl = new Uri("https://raw.github.com/distantcam/NuCake/master/icons/icon_28050_100.png");
+        packageBuilder.LicenseUrl = new Uri("http://opensource.org/licenses/MIT");
 
         var informationalVersion = typeof(CreatePackage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
         packageBuilder.Version = SemanticVersion.Parse(informationalVersion.InformationalVersion);

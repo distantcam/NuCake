@@ -4,7 +4,7 @@
   <UsingTask TaskName="NuCake.CreatePackage" AssemblyFile="NuCake.dll" />
 
   <Target Name="CreateNuGetPackage" AfterTargets="AfterBuild">
-    <NuCake.CreatePackage SourceFiles="@(Compile)" ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\NuGetBuild" />
+    <NuCake.CreatePackage SourceFiles="@(Compile)" ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\$(OutputPath)" />
   </Target>
 
 </Project>
