@@ -60,6 +60,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="CreatePackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskItemExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fody.targets" />

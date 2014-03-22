@@ -26,7 +26,9 @@ namespace NuCake
         public ITaskItem ReferenceLibrary { get; set; }
 
         [Required]
-        public string DestinationFolder { get; set; }
+        public ITaskItem DestinationFolder { get; set; }
+
+        public ITaskItem ReferenceDirectory { get; set; }
 
         public ITaskItem[] SourceFiles { get; set; }
 
@@ -51,26 +53,38 @@ namespace NuCake
 
         private void InnerExecute()
         {
-            Directory.CreateDirectory(DestinationFolder);
+            Directory.CreateDirectory(DestinationFolder.FullPath());
 
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(ReferenceLibrary.ItemSpec);
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(ReferenceLibrary.FullPath());
 
             var packageBuilder = new PackageBuilder();
 
-            packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.ItemSpec);
+            packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
             packageBuilder.Authors.Add(fileVersionInfo.CompanyName.OrDefault(Environment.UserName));
             packageBuilder.Description = fileVersionInfo.FileDescription;
 
-            packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = ReferenceLibrary.ItemSpec, Target = "lib" } });
+            if (ReferenceDirectory == null)
+            {
+                packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = ReferenceLibrary.FullPath(), Target = "lib" } });
 
-            var xmldoc = Path.ChangeExtension(ReferenceLibrary.ItemSpec, ".xml");
-            if (File.Exists(xmldoc))
-                packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = xmldoc, Target = "lib" } });
+                var xmldoc = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".xml");
+                if (File.Exists(xmldoc))
+                    packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = xmldoc, Target = "lib" } });
+            }
+            else
+            {
+                var files = Directory.GetFiles(ReferenceDirectory.FullPath(), "*", SearchOption.AllDirectories)
+                    .Where(f => !f.EndsWith(".pdb"))
+                    .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceDirectory.FullPath(), "") })
+                    .ToList();
+
+                packageBuilder.PopulateFiles("", files);
+            }
 
             using (var appDomainManager = new AppDomainManager(Path.GetDirectoryName(GetType().Assembly.Location)))
             {
                 var metadata = appDomainManager.CreateInstanceAndUnwrap<AssemblyMetadata>();
-                metadata.LoadMetadata(ReferenceLibrary.ItemSpec);
+                metadata.LoadMetadata(ReferenceLibrary.FullPath());
                 ApplyToPackageBuilder(packageBuilder, metadata, fileVersionInfo.FileVersion);
             }
 
@@ -92,22 +106,25 @@ namespace NuCake
 
             SavePackage(packageBuilder, ".nupkg", "Package created -> {0}");
 
-            // Now create the symbol package
+            CreateSourcePackage(packageBuilder);
+        }
 
+        private void CreateSourcePackage(PackageBuilder packageBuilder)
+        {
             if (SourceFiles.Any())
             {
-                var pdb = Path.ChangeExtension(ReferenceLibrary.ItemSpec, ".pdb");
+                var pdb = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".pdb");
                 if (File.Exists(pdb))
                     packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = pdb, Target = "lib" } });
 
                 foreach (var sourceFile in SourceFiles)
                 {
-                    var fullPath = Path.GetFullPath(sourceFile.ItemSpec);
+                    var fullPath = Path.GetFullPath(sourceFile.FullPath());
 
-                    if (File.Exists(sourceFile.ItemSpec) && fullPath.StartsWith(Environment.CurrentDirectory))
+                    if (File.Exists(sourceFile.FullPath()) && fullPath.StartsWith(Environment.CurrentDirectory))
                         packageBuilder.PopulateFiles("", new ManifestFile[] {
-                            new ManifestFile() { Source = fullPath, Target = Path.Combine("src", fullPath.Substring(Environment.CurrentDirectory.Length + 1)) }
-                        });
+                                            new ManifestFile() { Source = fullPath, Target = Path.Combine("src", fullPath.Substring(Environment.CurrentDirectory.Length + 1)) }
+                                        });
                 }
 
                 SavePackage(packageBuilder, ".symbols.nupkg", "Symbols created -> {0}");
@@ -136,7 +153,7 @@ namespace NuCake
 
         private void SavePackage(PackageBuilder packageBuilder, string filenameSuffix, string logMessage)
         {
-            var filename = Path.Combine(DestinationFolder, packageBuilder.GetFullName()) + filenameSuffix;
+            var filename = Path.Combine(DestinationFolder.FullPath(), packageBuilder.GetFullName()) + filenameSuffix;
             using (var file = new FileStream(filename, FileMode.Create))
             {
                 packageBuilder.Save(file);

@@ -1,41 +1,61 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Build.Utilities;
-using Xunit;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Execution;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Logging;
 
 public static class Tools
 {
-    public static string RunMSBuild(string project, params string[] flags)
+    public class StringLogger : ConsoleLogger
     {
-        var exePath = GetPathToMSBuild();
+        private readonly List<string> logs;
 
-        using (var process = Process.Start(new ProcessStartInfo(exePath, String.Format(@"""{0}"" /nologo /t:Rebuild /v:n /p:Configuration=Debug /p:DefineConstants=""{1}""", project, String.Join(";", flags)))
+        public StringLogger()
+            : base(LoggerVerbosity.Normal, s => { }, c => { }, () => { })
         {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        }))
+            logs = new List<string>();
+            this.WriteHandler = this.AddLine;
+        }
+
+        private void AddLine(string line)
         {
-            process.WaitForExit(10000);
+            logs.Add(line);
+        }
 
-            var lines = Regex.Split(process.StandardOutput.ReadToEnd(), Environment.NewLine)
-                .Where(l => !String.IsNullOrWhiteSpace(l))
-                .Select(l => l.Replace(Path.GetDirectoryName(Path.GetFullPath(project)), "[PROJECT_DIRECTORY]"))
-                .Skip(1)
-                .ToList();
-            lines.RemoveAt(lines.Count - 1);
-
-            return string.Join(Environment.NewLine, lines);
+        public override string ToString()
+        {
+            return string.Join("", logs);
         }
     }
 
-    private static string GetPathToMSBuild()
+    public static string RunMSBuild(string projectFileName, params string[] flags)
     {
-        var path = Path.Combine(ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.Version40), @"MSBuild.exe");
-        Assert.True(File.Exists(path), "MSBuild could not be found");
-        return path;
+        var pc = new ProjectCollection();
+        var globalProperty = new Dictionary<string, string>();
+        globalProperty.Add("Configuration", "Debug");
+        globalProperty.Add("Platform", "AnyCPU");
+        globalProperty.Add("DefineConstants", String.Join(";", flags));
+
+        var buildRequest = new BuildRequestData(projectFileName, globalProperty, null, new string[] { "Rebuild" }, null);
+
+        var logger = new StringLogger();
+
+        var buildParameters = new BuildParameters(pc) { Loggers = new ILogger[] { logger } };
+
+        var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest);
+
+        var lines = Regex.Split(logger.ToString(), Environment.NewLine)
+            .Where(l => !String.IsNullOrWhiteSpace(l))
+            .Select(l => l.Replace(Path.GetDirectoryName(Path.GetFullPath(projectFileName)), "[PROJECT_DIRECTORY]"))
+            .Select(l => l.Replace(Path.GetTempPath(), "[TEMP_DIRECTORY]"))
+            .Skip(1) // Build started at
+            .ToList();
+        lines.RemoveAt(lines.Count - 1); // Time elapsed
+
+        return string.Join(Environment.NewLine, lines);
     }
 }
