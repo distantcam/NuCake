@@ -59,6 +59,18 @@ namespace NuCake
 
             var packageBuilder = new PackageBuilder();
 
+            if (ReferenceDirectory != null)
+            {
+                var nuSpec = Directory.GetFiles(ReferenceDirectory.FullPath(), ReferenceLibrary.Filename() + ".nuspec", SearchOption.TopDirectoryOnly).FirstOrDefault();
+
+                if (nuSpec != null)
+                    using (var stream = File.OpenRead(nuSpec))
+                    {
+                        var manifest = Manifest.ReadFrom(stream, NullPropertyProvider.Instance, true);
+                        packageBuilder.Populate(manifest.Metadata);
+                    }
+            }
+
             packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
             packageBuilder.Authors.Add(fileVersionInfo.CompanyName.OrDefault(Environment.UserName));
             packageBuilder.Description = fileVersionInfo.FileDescription;
@@ -74,7 +86,7 @@ namespace NuCake
             else
             {
                 var files = Directory.GetFiles(ReferenceDirectory.FullPath(), "*", SearchOption.AllDirectories)
-                    .Where(f => !f.EndsWith(".pdb"))
+                    .Where(f => !f.EndsWith(".pdb") && !f.EndsWith(".nuspec"))
                     .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceDirectory.FullPath(), "") })
                     .ToList();
 
@@ -113,6 +125,16 @@ namespace NuCake
         {
             if (SourceFiles.Any())
             {
+                if (ReferenceDirectory != null)
+                {
+                    var files = Directory.GetFiles(ReferenceDirectory.FullPath(), "*", SearchOption.AllDirectories)
+                        .Where(f => f.EndsWith(".pdb"))
+                        .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceDirectory.FullPath(), "") })
+                        .ToList();
+
+                    packageBuilder.PopulateFiles("", files);
+                }
+
                 var pdb = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".pdb");
                 if (File.Exists(pdb))
                     packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = pdb, Target = "lib" } });

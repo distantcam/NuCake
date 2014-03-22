@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask TaskName="NuCake.CreatePackage" AssemblyFile="$(MSBuildProjectDirectory)\..\NuCake\bin\$(Configuration)\NuCake.dll" />
+
+  <Target Name="CreateNuGetPackage" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(IntermediateOutputPath)nuget\lib" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\SampleProject2.nuspec" DestinationFolder="$(IntermediateOutputPath)nuget" />
+    <NuCake.CreatePackage SourceFiles="@(Compile)" ReferenceDirectory="$(IntermediateOutputPath)nuget" ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\NuGetBuild" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)$(MSBuildProjectFile).FileListAbsolute.txt" Lines="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)nuget\lib\$(AssemblyName).dll" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)$(MSBuildProjectFile).FileListAbsolute.txt" Lines="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)nuget\SampleProject2.nuspec" />
+  </Target>
+
+</Project>

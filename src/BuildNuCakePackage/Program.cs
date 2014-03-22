@@ -17,6 +17,7 @@ static class Program
         packageBuilder.ProjectUrl = new Uri("https://github.com/distantcam/NuCake");
         packageBuilder.IconUrl = new Uri("https://raw.github.com/distantcam/NuCake/master/icons/icon_28050_100.png");
         packageBuilder.LicenseUrl = new Uri("http://opensource.org/licenses/MIT");
+        packageBuilder.DevelopmentDependency = true;
 
         var informationalVersion = typeof(CreatePackage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
         packageBuilder.Version = SemanticVersion.Parse(informationalVersion.InformationalVersion);

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuCake.Tests", "src\NuCake.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildNuCakePackage", "src\BuildNuCakePackage\BuildNuCakePackage.csproj", "{ECFFBAA7-2462-4072-A4DD-1FF3C2D6C027}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleProject2", "src\SampleProject2\SampleProject2.csproj", "{569CDF9D-ADCB-449A-B6C9-26CA5A6895E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,9 @@ Global
 		{ECFFBAA7-2462-4072-A4DD-1FF3C2D6C027}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECFFBAA7-2462-4072-A4DD-1FF3C2D6C027}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECFFBAA7-2462-4072-A4DD-1FF3C2D6C027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569CDF9D-ADCB-449A-B6C9-26CA5A6895E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569CDF9D-ADCB-449A-B6C9-26CA5A6895E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569CDF9D-ADCB-449A-B6C9-26CA5A6895E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
