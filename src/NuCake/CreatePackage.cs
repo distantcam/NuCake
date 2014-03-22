@@ -72,8 +72,11 @@ namespace NuCake
             }
 
             packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
-            packageBuilder.Authors.Add(fileVersionInfo.CompanyName.OrDefault(Environment.UserName));
             packageBuilder.Description = fileVersionInfo.FileDescription;
+            if (!String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
+            {
+                packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
+            }
 
             if (ReferenceDirectory == null)
             {
@@ -100,18 +103,13 @@ namespace NuCake
                 ApplyToPackageBuilder(packageBuilder, metadata, fileVersionInfo.FileVersion);
             }
 
-            if (!String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
-            {
-                packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
-            }
-
             if (String.IsNullOrWhiteSpace(packageBuilder.Description))
             {
                 packageBuilder.Description = "No Description";
                 Log.LogWarning("No description found. Add either a AssemblyTitleAttribute or AssemblyDescriptionAttribute to your project.");
             }
 
-            if (packageBuilder.Authors == null || !packageBuilder.Authors.Any())
+            if (!packageBuilder.Authors.Any())
             {
                 packageBuilder.Authors.Add(Environment.UserName);
                 Log.LogWarning("No company name found. Add a AssemblyCompanyAttribute to your project.");

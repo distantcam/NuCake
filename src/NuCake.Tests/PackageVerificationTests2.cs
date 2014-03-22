@@ -17,7 +17,7 @@ public class PackageVerificationTests2
         Assert.Equal("No Description", package.Description);
         Assert.Equal(new SemanticVersion(1, 0, 0, 0), package.Version);
         Assert.Equal(1, package.Authors.Count());
-        Assert.Equal(Environment.UserName, package.Authors.First());
+        Assert.Equal("Cam", package.Authors.First());
         Assert.Equal(new Uri("http://opensource.org/licenses/MIT"), package.LicenseUrl);
     }
 
@@ -68,8 +68,8 @@ public class PackageVerificationTests2
 
         var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject2\NuGetBuild\SampleProject2 1.0.0.nupkg");
 
-        Assert.Equal(1, package.Authors.Count());
-        Assert.Equal("The Company Co", package.Authors.First());
+        Assert.Equal(2, package.Authors.Count());
+        Assert.True(package.Authors.Contains("The Company Co"));
     }
 
     [Fact]
