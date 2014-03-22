@@ -19,5 +19,11 @@ namespace NuCake
             return assembly.GetCustomAttributesData()
                 .FirstOrDefault(d => d.Constructor.DeclaringType == typeof(T));
         }
+
+        public static CustomAttributeData GetCustomAttributesData(this Assembly assembly, string typeName)
+        {
+            return assembly.GetCustomAttributesData()
+                .FirstOrDefault(d => string.Equals(d.Constructor.DeclaringType.Name, typeName, StringComparison.CurrentCultureIgnoreCase));
+        }
     }
 }

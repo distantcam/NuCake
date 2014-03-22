@@ -20,6 +20,7 @@ namespace NuCake
             SetIfAvailable<AssemblyDescriptionAttribute>(assembly, s => Description = s);
             SetIfAvailable<AssemblyTitleAttribute>(assembly, s => Title = s);
             SetIfAvailable<AssemblyCopyrightAttribute>(assembly, s => Copyright = s);
+            SetIfAvailable("NugetVersionAttribute", assembly, s => InformationalVersion = s);
 
             Culture = assembly.GetName().CultureInfo.ToString();
         }
@@ -27,6 +28,13 @@ namespace NuCake
         private void SetIfAvailable<TAttribute>(Assembly assembly, Action<string> setter)
         {
             var attribute = assembly.GetCustomAttributesData<TAttribute>();
+            if (attribute != null)
+                setter((string)attribute.ConstructorArguments[0].Value);
+        }
+
+        private void SetIfAvailable(string typeName, Assembly assembly, Action<string> setter)
+        {
+            var attribute = assembly.GetCustomAttributesData(typeName);
             if (attribute != null)
                 setter((string)attribute.ConstructorArguments[0].Value);
         }

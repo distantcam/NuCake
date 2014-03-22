@@ -66,7 +66,7 @@ namespace NuCake
                 if (nuSpec != null)
                     using (var stream = File.OpenRead(nuSpec))
                     {
-                        var manifest = Manifest.ReadFrom(stream, NullPropertyProvider.Instance, true);
+                        var manifest = Manifest.ReadFrom(stream, NullPropertyProvider.Instance, false);
                         packageBuilder.Populate(manifest.Metadata);
                     }
             }
@@ -100,20 +100,21 @@ namespace NuCake
                 ApplyToPackageBuilder(packageBuilder, metadata, fileVersionInfo.FileVersion);
             }
 
+            if (!String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
+            {
+                packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
+            }
+
             if (String.IsNullOrWhiteSpace(packageBuilder.Description))
             {
                 packageBuilder.Description = "No Description";
                 Log.LogWarning("No description found. Add either a AssemblyTitleAttribute or AssemblyDescriptionAttribute to your project.");
             }
 
-            if (String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
+            if (packageBuilder.Authors == null || !packageBuilder.Authors.Any())
             {
                 packageBuilder.Authors.Add(Environment.UserName);
                 Log.LogWarning("No company name found. Add a AssemblyCompanyAttribute to your project.");
-            }
-            else
-            {
-                packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
             }
 
             SavePackage(packageBuilder, ".nupkg", "Package created -> {0}");
@@ -123,7 +124,7 @@ namespace NuCake
 
         private void CreateSourcePackage(PackageBuilder packageBuilder)
         {
-            if (SourceFiles.Any())
+            if (SourceFiles != null && SourceFiles.Any())
             {
                 if (ReferenceDirectory != null)
                 {
