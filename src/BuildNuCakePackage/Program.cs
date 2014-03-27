@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using NuCake;
 using NuGet;
 
 static class Program
 {
-    static void Main()
+    private static void Main()
     {
         var packageBuilder = new PackageBuilder();
 
@@ -19,8 +18,8 @@ static class Program
         packageBuilder.LicenseUrl = new Uri("http://opensource.org/licenses/MIT");
         packageBuilder.DevelopmentDependency = true;
 
-        var informationalVersion = typeof(CreatePackage).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        packageBuilder.Version = SemanticVersion.Parse(informationalVersion.InformationalVersion);
+        var nugetVersion = typeof(CreatePackage).Assembly.GetCustomAttributesData().First(o => o.Constructor.DeclaringType.Name == "NugetVersionAttribute");
+        packageBuilder.Version = SemanticVersion.Parse((string)nugetVersion.ConstructorArguments[0].Value);
 
         packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = "NuCake.dll", Target = "build" } });
         packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = "NuCake.targets", Target = "build" } });
