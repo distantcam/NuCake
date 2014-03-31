@@ -1,16 +1,26 @@
 using System;
+using System.IO;
 using System.Linq;
 using NuGet;
 using Xunit;
 
 public class PackageVerificationTests
 {
+    private readonly string projectPath;
+    private readonly string nupkgPath;
+
+    public PackageVerificationTests()
+    {
+        projectPath = Path.GetFullPath(@"..\..\..\SampleProject\SampleProject.csproj");
+        nupkgPath = Path.GetFullPath(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+    }
+
     [Fact]
     public void VerifyPackage()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj");
+        var log = Tools.RunMSBuild(projectPath);
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.True(package.IsValid);
         Assert.Equal("SampleProject", package.Id);
@@ -23,9 +33,9 @@ public class PackageVerificationTests
     [Fact]
     public void TitleAttributeSetsTitle()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetTitle");
+        var log = Tools.RunMSBuild(projectPath, "SetTitle");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("TitleSet", package.Title);
     }
@@ -33,9 +43,9 @@ public class PackageVerificationTests
     [Fact]
     public void TitleAttributeSetsDescription()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetTitle");
+        var log = Tools.RunMSBuild(projectPath, "SetTitle");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("TitleSet", package.Description);
     }
@@ -43,9 +53,9 @@ public class PackageVerificationTests
     [Fact]
     public void DescriptionAttributeSetsDescription()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetDescription");
+        var log = Tools.RunMSBuild(projectPath, "SetDescription");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("Description Set", package.Description);
     }
@@ -53,9 +63,9 @@ public class PackageVerificationTests
     [Fact]
     public void DescriptionAttributeOverridesTitleAttribute()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetTitle", "SetDescription");
+        var log = Tools.RunMSBuild(projectPath, "SetTitle", "SetDescription");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("Description Set", package.Description);
     }
@@ -63,9 +73,9 @@ public class PackageVerificationTests
     [Fact]
     public void CompanyAttributeSetsAuthor()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetCompany");
+        var log = Tools.RunMSBuild(projectPath, "SetCompany");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal(1, package.Authors.Count());
         Assert.Equal("The Company Co", package.Authors.First());
@@ -74,9 +84,9 @@ public class PackageVerificationTests
     [Fact]
     public void CopyrightAttributeSetsCopyright()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetCopyright");
+        var log = Tools.RunMSBuild(projectPath, "SetCopyright");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("Copyright Blah", package.Copyright);
     }
@@ -84,9 +94,9 @@ public class PackageVerificationTests
     [Fact]
     public void InformationalVersionAttributeSetsVersion()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetInformationalVersion");
+        var log = Tools.RunMSBuild(projectPath, "SetInformationalVersion");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0-info.nupkg");
+        var package = new OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0-info.nupkg");
 
         Assert.Equal(new SemanticVersion(1, 0, 0, "info"), package.Version);
     }
@@ -94,9 +104,9 @@ public class PackageVerificationTests
     [Fact]
     public void CultureAttributeSetsLanguage()
     {
-        var log = Tools.RunMSBuild(@"..\..\..\SampleProject\SampleProject.csproj", "SetCulture");
+        var log = Tools.RunMSBuild(projectPath, "SetCulture");
 
-        var package = new NuGet.OptimizedZipPackage(@"..\..\..\SampleProject\NuGetBuild\SampleProject 1.0.0.nupkg");
+        var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.Equal("en-AU", package.Language);
     }

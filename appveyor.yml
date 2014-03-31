@@ -22,7 +22,7 @@ artifacts:
 #     deployment configuration    #
 #---------------------------------#
 
-deploy:
-  provider: NuGet
-  api_key:
-    secure: zcdil8N+M2gC4/yejAz7hekwC3rt7qg2YTg596STxTrv/EJeTlqtb3MT6H5Cao6W
+#deploy:
+#  provider: NuGet
+#  api_key:
+#    secure: zcdil8N+M2gC4/yejAz7hekwC3rt7qg2YTg596STxTrv/EJeTlqtb3MT6H5Cao6W
