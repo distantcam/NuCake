@@ -19,6 +19,14 @@ artifacts:
   - path: output\*.nupkg
 
 #---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test:
+  assemblies:
+    - *\*.Tests.dll
+
+#---------------------------------#
 #     deployment configuration    #
 #---------------------------------#
 
