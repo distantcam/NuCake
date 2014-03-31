@@ -11,20 +11,15 @@ build:
 before_build:
   - nuget restore -source "https://www.nuget.org/api/v2;https://www.myget.org/F/distantcam"
 
+after_build:
+  - rmdir /S /Q packages
+
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
 
 artifacts:
   - path: output\*.nupkg
-
-#---------------------------------#
-#       tests configuration       #
-#---------------------------------#
-
-test:
-  assemblies:
-    - *\*.Tests.dll
 
 #---------------------------------#
 #     deployment configuration    #
