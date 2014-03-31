@@ -1,18 +1,18 @@
 ﻿__________________________________________________
 Project "[PROJECT_DIRECTORY]\SampleProject.csproj" (Rebuild target(s)):
 Target CoreClean:
-    Deleting file "[PROJECT_DIRECTORY]\bin\Debug\SampleProject.dll".
-    Deleting file "[PROJECT_DIRECTORY]\bin\Debug\SampleProject.pdb".
-    Deleting file "[PROJECT_DIRECTORY]\obj\Debug\SampleProject.dll".
-    Deleting file "[PROJECT_DIRECTORY]\obj\Debug\SampleProject.pdb".
+    Deleting file "[PROJECT_DIRECTORY]\bin[CONFIG]SampleProject.dll".
+    Deleting file "[PROJECT_DIRECTORY]\bin[CONFIG]SampleProject.pdb".
+    Deleting file "[PROJECT_DIRECTORY]\obj[CONFIG]SampleProject.dll".
+    Deleting file "[PROJECT_DIRECTORY]\obj[CONFIG]SampleProject.pdb".
 Target GenerateTargetFrameworkMonikerAttribute:
   Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
 Target CoreCompile:
-    C:\Windows\Microsoft.NET\Framework\v4.0.30319\Csc.exe /noconfig /nowarn:1701,1702 /nostdlib+ /platform:AnyCPU /errorreport:prompt /warn:4 /define:SetTitle /highentropyva- /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll" /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /debug+ /debug:full /filealign:512 /optimize- /out:obj\Debug\SampleProject.dll /target:library /utf8output AssemblyInfo.cs Folder\ClassInAFolder.cs MyClass.cs "[TEMP_DIRECTORY].NETFramework,Version=v4.0.AssemblyAttributes.cs"
+    C:\Windows\Microsoft.NET\Framework\v4.0.30319\Csc.exe /noconfig /nowarn:1701,1702 /nostdlib+ /platform:AnyCPU /errorreport:prompt /warn:4 /define:SetTitle /highentropyva- /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll" /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /reference:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /debug:pdbonly /filealign:512 /optimize+ /out:obj[CONFIG]SampleProject.dll /target:library /utf8output AssemblyInfo.cs Folder\ClassInAFolder.cs MyClass.cs "[TEMP_DIRECTORY].NETFramework,Version=v4.0.AssemblyAttributes.cs"
 Target CopyFilesToOutputDirectory:
-    Copying file from "obj\Debug\SampleProject.dll" to "bin\Debug\SampleProject.dll".
-    SampleProject -> [PROJECT_DIRECTORY]\bin\Debug\SampleProject.dll
-    Copying file from "obj\Debug\SampleProject.pdb" to "bin\Debug\SampleProject.pdb".
+    Copying file from "obj[CONFIG]SampleProject.dll" to "bin[CONFIG]SampleProject.dll".
+    SampleProject -> [PROJECT_DIRECTORY]\bin[CONFIG]SampleProject.dll
+    Copying file from "obj[CONFIG]SampleProject.pdb" to "bin[CONFIG]SampleProject.pdb".
 Target CreateNuGetPackage:
     [PROJECT_DIRECTORY]\NuCake.targets(7,5): warning : No company name found. Add a AssemblyCompanyAttribute to your project.
     Package created -> [PROJECT_DIRECTORY]\NuGetBuild\SampleProject 1.0.0.nupkg

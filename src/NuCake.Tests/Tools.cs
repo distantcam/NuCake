@@ -56,6 +56,8 @@ public static class Tools
             .Where(l => !String.IsNullOrWhiteSpace(l))
             .Select(l => l.Replace(Path.GetDirectoryName(Path.GetFullPath(projectFileName)), "[PROJECT_DIRECTORY]"))
             .Select(l => l.Replace(Path.GetTempPath(), "[TEMP_DIRECTORY]"))
+            .Select(l => l.Replace(@"\Debug\", "[CONFIG]"))
+            .Select(l => l.Replace(@"\Release\", "[CONFIG]"))
             .Skip(1) // Build started at
             .ToList();
         lines.RemoveAt(lines.Count - 1); // Time elapsed

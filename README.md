@@ -1,4 +1,5 @@
 ![Icon](https://raw.github.com/distantcam/NuCake/master/icons/icon_28050_100.png)
+[![Build status](https://ci.appveyor.com/api/projects/status/m05c0q48ej5ssedm)](https://ci.appveyor.com/project/distantcam/nucake)
 
 **NuCake** is a package for quickly creating NuGet packages from your project.
 
