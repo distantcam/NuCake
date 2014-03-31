@@ -1,13 +1,18 @@
-﻿using System;
+﻿using NuCake;
+using NuGet;
+using System;
 using System.IO;
 using System.Linq;
-using NuCake;
-using NuGet;
 
 static class Program
 {
-    private static void Main()
+    private static void Main(string[] args)
     {
+        var outputPath = args.Length == 0 ? Path.GetFullPath(Path.Combine("..", "..", "..", "..", "output")) : args[0];
+
+        if (!Directory.Exists(outputPath))
+            Directory.CreateDirectory(outputPath);
+
         var packageBuilder = new PackageBuilder();
 
         packageBuilder.Id = "NuCake";
@@ -18,13 +23,18 @@ static class Program
         packageBuilder.LicenseUrl = new Uri("http://opensource.org/licenses/MIT");
         packageBuilder.DevelopmentDependency = true;
 
-        var nugetVersion = typeof(CreatePackage).Assembly.GetCustomAttributesData().First(o => o.Constructor.DeclaringType.Name == "NugetVersionAttribute");
-        packageBuilder.Version = SemanticVersion.Parse((string)nugetVersion.ConstructorArguments[0].Value);
+        var attributes = typeof(CreatePackage).Assembly.GetCustomAttributesData();
+
+        var nugetVersion = attributes.First(o => o.Constructor.DeclaringType.Name == "AssemblyInformationalVersionAttribute");
+        var version = (string)nugetVersion.ConstructorArguments[0].Value;
+        version = version.Substring(0, version.IndexOf('+'));
+        packageBuilder.Version = SemanticVersion.Parse(version);
 
         packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = "NuCake.dll", Target = "build" } });
         packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = "NuCake.targets", Target = "build" } });
 
-        var filename = packageBuilder.GetFullName() + ".nupkg";
+        var filename = Path.Combine(outputPath, packageBuilder.GetFullName() + ".nupkg");
+
         using (var file = new FileStream(filename, FileMode.Create))
         {
             packageBuilder.Save(file);
