@@ -7,6 +7,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
+using Microsoft.Build.Utilities;
 
 public static class Tools
 {
@@ -54,10 +55,12 @@ public static class Tools
 
         var lines = Regex.Split(logger.ToString(), Environment.NewLine)
             .Where(l => !String.IsNullOrWhiteSpace(l))
+            .Where(l => !l.Contains("ResolveAssemblyReference.cache")) // Doesn't always appear
             .Select(l => l.Replace(Path.GetDirectoryName(Path.GetFullPath(projectFileName)), "[PROJECT_DIRECTORY]"))
             .Select(l => l.Replace(Path.GetTempPath(), "[TEMP_DIRECTORY]"))
-            .Select(l => l.Replace(@"\Debug\", "[CONFIG]"))
-            .Select(l => l.Replace(@"\Release\", "[CONFIG]"))
+            .Select(l => l.Replace(@"\Debug\", @"\[CONFIG]\"))
+            .Select(l => l.Replace(@"\Release\", @"\[CONFIG]\"))
+            .Select(l => l.Replace(ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.VersionLatest), @"[DOTNET_FRAMEWORK]"))
             .Skip(1) // Build started at
             .ToList();
         lines.RemoveAt(lines.Count - 1); // Time elapsed
