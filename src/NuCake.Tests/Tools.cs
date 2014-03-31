@@ -36,7 +36,11 @@ public static class Tools
     {
         var pc = new ProjectCollection();
         var globalProperty = new Dictionary<string, string>();
+#if DEBUG
         globalProperty.Add("Configuration", "Debug");
+#else
+        globalProperty.Add("Configuration", "Release");
+#endif
         globalProperty.Add("Platform", "AnyCPU");
         globalProperty.Add("DefineConstants", String.Join(";", flags));
 
