@@ -1,8 +1,9 @@
-﻿using NuCake;
-using NuGet;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using NuCake;
+using NuGet;
 
 static class Program
 {
@@ -27,7 +28,10 @@ static class Program
 
         var nugetVersion = attributes.First(o => o.Constructor.DeclaringType.Name == "AssemblyInformationalVersionAttribute");
         var version = (string)nugetVersion.ConstructorArguments[0].Value;
-        version = version.Substring(0, version.IndexOf('+'));
+
+        // Change SemVer 2 format back to 1 for nuget
+        version = Regex.Replace(version, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2");
+
         packageBuilder.Version = SemanticVersion.Parse(version);
 
         packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = "NuCake.dll", Target = "build" } });
