@@ -17,7 +17,7 @@ namespace NuCake
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => GetAssembly(args.Name);
         }
 
-        static Assembly GetAssembly(string name)
+        private static Assembly GetAssembly(string name)
         {
             return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName == name);
         }
@@ -155,8 +155,13 @@ namespace NuCake
         public void ApplyToPackageBuilder(PackageBuilder packageBuilder, AssemblyMetadata metadata, string fileVersion)
         {
             SemanticVersion version;
-            if (String.IsNullOrEmpty(metadata.InformationalVersion) || !SemanticVersion.TryParse(metadata.InformationalVersion, out version))
-                version = SemanticVersion.Parse(fileVersion);
+            if (!SemanticVersion.TryParse(metadata.InformationalVersion, out version))
+            {
+                if (String.IsNullOrEmpty(metadata.InformationalVersion))
+                    version = SemanticVersion.Parse(fileVersion);
+                else
+                    version = SemanticVersion.Parse(Regex.Replace(metadata.InformationalVersion, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2"));
+            }
             packageBuilder.Version = version;
 
             if (!String.IsNullOrEmpty(metadata.Description))
