@@ -24,7 +24,7 @@ public static class Tools
 
         private void AddLine(string line)
         {
-            logs.Add(line);
+            logs.Add(line.TrimStart(' ', '\t'));
         }
 
         public override string ToString()
