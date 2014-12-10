@@ -2,7 +2,6 @@
 #       build configuration       #
 #---------------------------------#
 
-platform: AnyCPU
 configuration: Release
 
 build:
@@ -10,9 +9,6 @@ build:
 
 before_build:
   - nuget restore
-
-after_build:
-  - rmdir /S /Q packages
 
 #---------------------------------#
 #      artifacts configuration    #
