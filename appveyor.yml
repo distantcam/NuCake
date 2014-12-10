@@ -9,7 +9,7 @@ build:
   project: NuCake.sln
 
 before_build:
-  - nuget restore -source "https://www.nuget.org/api/v2;https://www.myget.org/F/distantcam"
+  - nuget restore
 
 after_build:
   - rmdir /S /Q packages

@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>1da7a60a</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Janitor">
-      <HintPath>..\..\packages\Janitor.Fody.0.6.1.0\Lib\portable-net4+sl4+wp7+win8+MonoAndroid16+MonoTouch40\Janitor.dll</HintPath>
+      <HintPath>..\..\packages\Janitor.Fody.1.1.0.0\Lib\portable-net4+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Janitor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
@@ -62,7 +63,9 @@
     <Compile Include="TaskItemExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
@@ -82,9 +85,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Fody.1.22.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.22.1\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\GitVersionTask.0.20.0.4\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\GitVersionTask.0.20.0.4\Build\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\..\packages\GitVersionTask.1.3.3\Build\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\GitVersionTask.1.3.3\Build\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fody.1.26.2\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.26.2\build\Fody.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Fody.1.22.1\build\Fody.targets" Condition="Exists('..\..\packages\Fody.1.22.1\build\Fody.targets')" />
-  <Import Project="..\..\packages\GitVersionTask.0.20.0.4\Build\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.0.20.0.4\Build\GitVersionTask.targets')" />
+  <Import Project="..\..\packages\GitVersionTask.1.3.3\Build\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.1.3.3\Build\GitVersionTask.targets')" />
+  <Import Project="..\..\packages\Fody.1.26.2\build\Fody.targets" Condition="Exists('..\..\packages\Fody.1.26.2\build\Fody.targets')" />
 </Project>
