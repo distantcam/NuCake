@@ -14,11 +14,14 @@ public class MyCustomReporter : IEnvironmentAwareReporter
 
     public void Report(string approved, string received)
     {
+        var o = received.Replace(".received.", ".output.");
+        File.Copy(received, o);
+
         var a = File.Exists(approved) ? File.ReadAllText(approved) : "";
         var r = File.ReadAllText(received);
         QuietReporter.DisplayCommandLineApproval(approved, received);
 
-        Assert.Equal(a, r);
+        //Assert.Equal(a, r);
     }
 }
 
