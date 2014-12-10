@@ -16,6 +16,7 @@ before_build:
 
 artifacts:
   - path: output\*.nupkg
+  - path: src\NuCake.Tests\*.txt
 
 #---------------------------------#
 #     deployment configuration    #

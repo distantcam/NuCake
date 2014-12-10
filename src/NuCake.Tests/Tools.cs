@@ -24,7 +24,7 @@ public static class Tools
 
         private void AddLine(string line)
         {
-            logs.Add(line.TrimEnd('\r', '\n') + "\r\n");
+            logs.Add(line);
         }
 
         public override string ToString()
