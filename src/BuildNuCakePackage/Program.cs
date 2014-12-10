@@ -30,7 +30,7 @@ static class Program
         var version = (string)nugetVersion.ConstructorArguments[0].Value;
 
         // Change SemVer 2 format back to 1 for nuget
-        version = Regex.Replace(version, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2");
+        version = Regex.Replace(version, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1");
 
         packageBuilder.Version = SemanticVersion.Parse(version);
 
