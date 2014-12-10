@@ -141,8 +141,9 @@ namespace NuCake
                 foreach (var sourceFile in SourceFiles)
                 {
                     var fullPath = Path.GetFullPath(sourceFile.FullPath());
+                    var fileInfo = new FileInfo(fullPath);
 
-                    if (File.Exists(sourceFile.FullPath()) && fullPath.StartsWith(Environment.CurrentDirectory))
+                    if (fileInfo.Exists && fileInfo.Length > 0 && fullPath.StartsWith(Environment.CurrentDirectory))
                         packageBuilder.PopulateFiles("", new ManifestFile[] {
                                             new ManifestFile() { Source = fullPath, Target = Path.Combine("src", fullPath.Substring(Environment.CurrentDirectory.Length + 1)) }
                                         });
@@ -152,7 +153,7 @@ namespace NuCake
             }
         }
 
-        public void ApplyToPackageBuilder(PackageBuilder packageBuilder, AssemblyMetadata metadata, string fileVersion)
+        private void ApplyToPackageBuilder(PackageBuilder packageBuilder, AssemblyMetadata metadata, string fileVersion)
         {
             SemanticVersion version;
             if (!SemanticVersion.TryParse(metadata.InformationalVersion, out version))
