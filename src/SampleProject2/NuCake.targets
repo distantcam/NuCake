@@ -6,9 +6,8 @@
   <Target Name="CreateNuGetPackage" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(IntermediateOutputPath)nuget\lib" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\SampleProject2.nuspec" DestinationFolder="$(IntermediateOutputPath)nuget" />
-    <NuCake.CreatePackage SourceFiles="@(Compile)" ReferenceDirectory="$(IntermediateOutputPath)nuget" ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\NuGetBuild" />
+    <NuCake.CreatePackage SourceFiles="@(Compile)" ReferenceFolder="$(IntermediateOutputPath)nuget" ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(MSBuildProjectDirectory)\NuGetBuild" />
     <WriteLinesToFile File="$(IntermediateOutputPath)$(MSBuildProjectFile).FileListAbsolute.txt" Lines="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)nuget\lib\$(AssemblyName).dll" />
     <WriteLinesToFile File="$(IntermediateOutputPath)$(MSBuildProjectFile).FileListAbsolute.txt" Lines="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)nuget\SampleProject2.nuspec" />
   </Target>
-
 </Project>

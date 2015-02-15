@@ -56,6 +56,7 @@ public static class Tools
         var lines = Regex.Split(logger.ToString(), Environment.NewLine)
             .Where(l => !String.IsNullOrWhiteSpace(l))
             .Where(l => !l.Contains("ResolveAssemblyReference.cache")) // Doesn't always appear
+            .Where(l => !l.Contains("Deleting file"))
             .Select(l => l.Replace(Path.GetDirectoryName(Path.GetFullPath(projectFileName)), "[PROJECT_DIRECTORY]"))
             .Select(l => l.Replace(Path.GetTempPath(), "[TEMP_DIRECTORY]"))
             .Select(l => l.Replace(@"\Debug\", @"\[CONFIG]\"))

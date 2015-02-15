@@ -1,10 +1,6 @@
 ﻿__________________________________________________
 Project "[PROJECT_DIRECTORY]\SampleProject.csproj" (Rebuild target(s)):
 Target CoreClean:
-    Deleting file "[PROJECT_DIRECTORY]\bin\[CONFIG]\SampleProject.dll".
-    Deleting file "[PROJECT_DIRECTORY]\bin\[CONFIG]\SampleProject.pdb".
-    Deleting file "[PROJECT_DIRECTORY]\obj\[CONFIG]\SampleProject.dll".
-    Deleting file "[PROJECT_DIRECTORY]\obj\[CONFIG]\SampleProject.pdb".
 Target GenerateTargetFrameworkMonikerAttribute:
   Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
 Target CoreCompile:

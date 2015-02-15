@@ -28,9 +28,11 @@ namespace NuCake
         [Required]
         public ITaskItem DestinationFolder { get; set; }
 
-        public ITaskItem ReferenceDirectory { get; set; }
+        public ITaskItem ReferenceFolder { get; set; }
 
         public ITaskItem[] SourceFiles { get; set; }
+
+        public ITaskItem VersionFieldCount { get; set; }
 
         public override bool Execute()
         {
@@ -59,9 +61,9 @@ namespace NuCake
 
             var packageBuilder = new PackageBuilder();
 
-            if (ReferenceDirectory != null)
+            if (ReferenceFolder != null)
             {
-                var nuSpec = Directory.GetFiles(ReferenceDirectory.FullPath(), ReferenceLibrary.Filename() + ".nuspec", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                var nuSpec = Directory.GetFiles(ReferenceFolder.FullPath(), ReferenceLibrary.Filename() + ".nuspec", SearchOption.TopDirectoryOnly).FirstOrDefault();
 
                 if (nuSpec != null)
                     using (var stream = File.OpenRead(nuSpec))
@@ -73,12 +75,12 @@ namespace NuCake
 
             packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
             packageBuilder.Description = fileVersionInfo.FileDescription;
-            if (!String.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
+            if (!string.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
             {
                 packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
             }
 
-            if (ReferenceDirectory == null)
+            if (ReferenceFolder == null)
             {
                 packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = ReferenceLibrary.FullPath(), Target = "lib" } });
 
@@ -88,9 +90,9 @@ namespace NuCake
             }
             else
             {
-                var files = Directory.GetFiles(ReferenceDirectory.FullPath(), "*", SearchOption.AllDirectories)
-                    .Where(f => !f.EndsWith(".pdb") && !f.EndsWith(".nuspec"))
-                    .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceDirectory.FullPath(), "") })
+                var files = Directory.GetFiles(ReferenceFolder.FullPath(), "*", SearchOption.AllDirectories)
+                    .Where(f => !f.EndsWith(ReferenceLibrary.Filename() + ".nuspec"))
+                    .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceFolder.FullPath(), "") })
                     .ToList();
 
                 packageBuilder.PopulateFiles("", files);
@@ -103,7 +105,7 @@ namespace NuCake
                 ApplyToPackageBuilder(packageBuilder, metadata, fileVersionInfo.FileVersion);
             }
 
-            if (String.IsNullOrWhiteSpace(packageBuilder.Description))
+            if (string.IsNullOrWhiteSpace(packageBuilder.Description))
             {
                 packageBuilder.Description = "No Description";
                 Log.LogWarning("No description found. Add either a AssemblyTitleAttribute or AssemblyDescriptionAttribute to your project.");
@@ -124,19 +126,12 @@ namespace NuCake
         {
             if (SourceFiles != null && SourceFiles.Any())
             {
-                if (ReferenceDirectory != null)
+                if (ReferenceFolder == null)
                 {
-                    var files = Directory.GetFiles(ReferenceDirectory.FullPath(), "*", SearchOption.AllDirectories)
-                        .Where(f => f.EndsWith(".pdb"))
-                        .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceDirectory.FullPath(), "") })
-                        .ToList();
-
-                    packageBuilder.PopulateFiles("", files);
+                    var pdb = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".pdb");
+                    if (File.Exists(pdb))
+                        packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = pdb, Target = "lib" } });
                 }
-
-                var pdb = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".pdb");
-                if (File.Exists(pdb))
-                    packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = pdb, Target = "lib" } });
 
                 foreach (var sourceFile in SourceFiles)
                 {
@@ -158,23 +153,30 @@ namespace NuCake
             SemanticVersion version;
             if (!SemanticVersion.TryParse(metadata.InformationalVersion, out version))
             {
-                if (String.IsNullOrEmpty(metadata.InformationalVersion))
+                if (string.IsNullOrEmpty(metadata.InformationalVersion))
                     version = SemanticVersion.Parse(fileVersion);
                 else
                     version = SemanticVersion.Parse(Regex.Replace(metadata.InformationalVersion, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2"));
             }
             packageBuilder.Version = version;
 
-            if (!String.IsNullOrEmpty(metadata.Description))
+            if (VersionFieldCount != null)
+            {
+                int count;
+                if (int.TryParse(VersionFieldCount.ItemSpec, out count))
+                    packageBuilder.Version = SemanticVersion.Parse(version.Version.ToString(count));
+            }
+
+            if (!string.IsNullOrEmpty(metadata.Description))
                 packageBuilder.Description = metadata.Description;
 
-            if (!String.IsNullOrEmpty(metadata.Title))
+            if (!string.IsNullOrEmpty(metadata.Title))
                 packageBuilder.Title = metadata.Title;
 
-            if (!String.IsNullOrEmpty(metadata.Copyright))
+            if (!string.IsNullOrEmpty(metadata.Copyright))
                 packageBuilder.Copyright = metadata.Copyright;
 
-            if (!String.IsNullOrEmpty(metadata.Culture))
+            if (!string.IsNullOrEmpty(metadata.Culture))
                 packageBuilder.Language = metadata.Culture;
         }
 

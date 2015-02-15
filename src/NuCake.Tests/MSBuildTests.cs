@@ -1,11 +1,22 @@
 ﻿using System.Runtime.CompilerServices;
 using ApprovalTests;
+using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
 using Xunit;
 
 [UseReporter(typeof(DiffReporter))]
+[UseApprovalSubdirectory("ApprovalFiles")]
 public class MSBuildTests
 {
+    public MSBuildTests()
+    {
+#if DEBUG
+        ApprovalTests.Namers.NamerFactory.AsEnvironmentSpecificTest(() => "Debug");
+#else
+        ApprovalTests.Namers.NamerFactory.AsEnvironmentSpecificTest(() => "Release");
+#endif
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     [Fact]
     public void NoAttributesGivesWarnings()
