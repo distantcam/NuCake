@@ -1,23 +1,40 @@
-# Stop git from messing with line endings.
-* -text 
-
-# Don't check these into the repo as LF to work around TeamCity bug
-*.xml     -text 
-*.targets -text
+# Auto detect text files and perform LF normalization
+# http://davidlaing.com/2012/09/19/customise-your-gitattributes-to-become-a-git-ninja/
+* text=auto eol=crlf
 
 # Custom for Visual Studio
-*.cs     diff=csharp
-*.sln    merge=union
+*.sln    merge=union 
 *.csproj merge=union
 *.vbproj merge=union
 *.fsproj merge=union
 *.dbproj merge=union
 
-# Denote all files that are truly binary and should not be modified.
-*.dll binary
-*.exe binary
-*.png binary
-*.ico binary
-*.snk binary
-*.pdb binary
-*.svg binary
+*.cs     diff=csharp
+
+# Documents
+*.doc    diff=astextplain
+*.DOC    diff=astextplain
+*.docx   diff=astextplain
+*.DOCX   diff=astextplain
+*.dot    diff=astextplain
+*.DOT    diff=astextplain
+*.pdf    diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
+*.md     text
+*.adoc   text
+*.textile text
+*.mustache text
+*.csv    text
+*.tab    text
+*.tsv    text
+*.sql    text
+
+# Graphics
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.svg    text
