@@ -6,7 +6,7 @@
   <Target Name="CreateNuGetPackage" AfterTargets="AfterBuild">
     <NuCake.CreatePackage
       SourceFiles="@(Compile)"
-      ReferenceLibrary="$(MSBuildProjectDirectory)\$(OutputPath)$(AssemblyName).dll"
+      ReferenceLibrary="$(TargetPath)"
       DestinationFolder="$(MSBuildProjectDirectory)\$(OutputPath)"
       ReferenceFolder="$(NuCakeReferenceFolder)"
       VersionFieldCount="$(NuCakeVersionFieldCount)" />

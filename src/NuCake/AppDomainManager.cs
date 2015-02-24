@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 
 namespace NuCake
 {
@@ -14,6 +14,7 @@ namespace NuCake
             domainSetup.ApplicationBase = basePath;
 
             appDomain = AppDomain.CreateDomain(Path.GetFileName(Path.GetDirectoryName(basePath)) + "_AppDomain", null, domainSetup);
+            appDomain.ReflectionOnlyAssemblyResolve += (sender, args) => Assembly.ReflectionOnlyLoad(args.Name);
         }
 
         public T CreateInstanceAndUnwrap<T>()
