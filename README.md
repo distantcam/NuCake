@@ -26,6 +26,23 @@ To Install from the NuGet Package Manager Console
 
 The author and description are required. If there is no attribute for them, **NuCake** uses default values and returns a warning during the build.
 
+## MSBuild
+
+**NuCake** adds an msbuild task that will build your NuGet package from the various attributes.
+
+You can also provide a reference folder to **NuCake**. Any files in the reference folder will be copied into the NuGet package instead, so make sure the output of your build is also in this folder if you want to include it.
+
+If there is a nuget spec file in the reference folder then the metadata from that will be used where possible.
+
+To specify the reference folder you'll need to add some properties to your project.
+
+    <PropertyGroup>
+      <NuCakeReferenceFolder>$(MSBuildProjectDirectory)\$(OutputPath)nuget</NuCakeReferenceFolder>
+      <NuCakeVersionFieldCount>3</NuCakeVersionFieldCount>
+    </PropertyGroup>
+
+`NuCakeVersionFieldCount` allows you to say how many parts of the version to use as your NuGet version (1-4).
+
 ## Icon
 
 Cake by Kon Issara from The Noun Project

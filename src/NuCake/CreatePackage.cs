@@ -73,26 +73,28 @@ namespace NuCake
                     }
             }
 
-            packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
-            packageBuilder.Description = fileVersionInfo.FileDescription;
+            if (string.IsNullOrWhiteSpace(packageBuilder.Id))
+                packageBuilder.Id = Path.GetFileNameWithoutExtension(ReferenceLibrary.FullPath());
+
+            if (string.IsNullOrWhiteSpace(packageBuilder.Description))
+                packageBuilder.Description = fileVersionInfo.FileDescription;
+
             if (!string.IsNullOrWhiteSpace(fileVersionInfo.CompanyName))
-            {
                 packageBuilder.Authors.Add(fileVersionInfo.CompanyName);
-            }
 
             if (ReferenceFolder == null)
             {
-                packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = ReferenceLibrary.FullPath(), Target = "lib" } });
+                packageBuilder.PopulateFiles("", new[] { new ManifestFile { Source = ReferenceLibrary.FullPath(), Target = "lib" } });
 
                 var xmldoc = Path.ChangeExtension(ReferenceLibrary.FullPath(), ".xml");
                 if (File.Exists(xmldoc))
-                    packageBuilder.PopulateFiles("", new ManifestFile[] { new ManifestFile() { Source = xmldoc, Target = "lib" } });
+                    packageBuilder.PopulateFiles("", new[] { new ManifestFile { Source = xmldoc, Target = "lib" } });
             }
             else
             {
                 var files = Directory.GetFiles(ReferenceFolder.FullPath(), "*", SearchOption.AllDirectories)
                     .Where(f => !f.EndsWith(ReferenceLibrary.Filename() + ".nuspec"))
-                    .Select(f => new ManifestFile() { Source = f, Target = f.Replace(ReferenceFolder.FullPath(), "") })
+                    .Select(f => new ManifestFile { Source = f, Target = f.Replace(ReferenceFolder.FullPath(), "") })
                     .ToList();
 
                 packageBuilder.PopulateFiles("", files);
@@ -154,9 +156,17 @@ namespace NuCake
             if (!SemanticVersion.TryParse(metadata.InformationalVersion, out version))
             {
                 if (string.IsNullOrEmpty(metadata.InformationalVersion))
+                {
                     version = SemanticVersion.Parse(fileVersion);
-                else
-                    version = SemanticVersion.Parse(Regex.Replace(metadata.InformationalVersion, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2"));
+                }
+                else if (!SemanticVersion.TryParse(Regex.Replace(metadata.InformationalVersion, @"^(\d+\.\d+\.\d+)\+(\d+).*$", "$1.$2"), out version))
+                {
+                    if (!SemanticVersion.TryParse(Regex.Replace(metadata.InformationalVersion, @"^(\d+\.\d+\.\d+)\+.*$", "$1"), out version))
+                    {
+                        version = SemanticVersion.Parse(fileVersion);
+                        Log.LogWarning("Version cannot be determined from AssemblyInformationalVersion '{0}'.", metadata.InformationalVersion);
+                    }
+                }
             }
             packageBuilder.Version = version;
 

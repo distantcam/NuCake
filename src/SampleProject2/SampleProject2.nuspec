@@ -6,7 +6,7 @@
     <authors>Cam</authors>
     <owners>Cam</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>No Description</description>
+    <description>The description</description>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
   </metadata>
 </package>

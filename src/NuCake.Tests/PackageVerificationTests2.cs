@@ -24,7 +24,7 @@ public class PackageVerificationTests2
 
         Assert.True(package.IsValid);
         Assert.Equal("SampleProject2", package.Id);
-        Assert.Equal("No Description", package.Description);
+        Assert.Equal("The description", package.Description);
         Assert.Equal(new SemanticVersion(1, 0, 0, 0), package.Version);
         Assert.Equal(1, package.Authors.Count());
         Assert.Equal("Cam", package.Authors.First());
@@ -48,7 +48,7 @@ public class PackageVerificationTests2
 
         var package = new OptimizedZipPackage(nupkgPath);
 
-        Assert.Equal("TitleSet", package.Description);
+        Assert.Equal("The description", package.Description);
     }
 
     [Fact]
