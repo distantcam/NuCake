@@ -63,14 +63,24 @@ namespace NuCake
 
             if (ReferenceFolder != null)
             {
-                var nuSpec = Directory.GetFiles(ReferenceFolder.FullPath(), ReferenceLibrary.Filename() + ".nuspec", SearchOption.TopDirectoryOnly).FirstOrDefault();
+                var nuSpecs = Directory.GetFiles(ReferenceFolder.FullPath(), "*.nuspec", SearchOption.TopDirectoryOnly);
 
+                if (nuSpecs.Length > 1)
+                {
+                    Log.LogWarning("Multiple nuspec files found: {0}", string.Join(", ", nuSpecs));
+                }
+
+                var nuSpec = nuSpecs[0];
                 if (nuSpec != null)
+                {
+                    Log.LogMessage("Using nuspec file: {0}", nuSpec);
+
                     using (var stream = File.OpenRead(nuSpec))
                     {
                         var manifest = Manifest.ReadFrom(stream, NullPropertyProvider.Instance, false);
                         packageBuilder.Populate(manifest.Metadata);
                     }
+                }
             }
 
             if (string.IsNullOrWhiteSpace(packageBuilder.Id))

@@ -12,7 +12,7 @@ public class PackageVerificationTests2
     public PackageVerificationTests2()
     {
         projectPath = Path.GetFullPath(@"..\..\..\SampleProject2\SampleProject2.csproj");
-        nupkgPath = Path.GetFullPath(@"..\..\..\SampleProject2\NuGetBuild\SampleProject2 1.0.0.nupkg");
+        nupkgPath = Path.GetFullPath(@"..\..\..\SampleProject2\NuGetBuild\The.SampleProject2 1.0.0.nupkg");
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class PackageVerificationTests2
         var package = new OptimizedZipPackage(nupkgPath);
 
         Assert.True(package.IsValid);
-        Assert.Equal("SampleProject2", package.Id);
+        Assert.Equal("The.SampleProject2", package.Id);
         Assert.Equal("The description", package.Description);
         Assert.Equal(new SemanticVersion(1, 0, 0, 0), package.Version);
         Assert.Equal(1, package.Authors.Count());
@@ -97,7 +97,7 @@ public class PackageVerificationTests2
     {
         var log = Tools.RunMSBuild(projectPath, "SetInformationalVersion");
 
-        var package = new OptimizedZipPackage(@"..\..\..\SampleProject2\NuGetBuild\SampleProject2 1.0.0-info.nupkg");
+        var package = new OptimizedZipPackage(@"..\..\..\SampleProject2\NuGetBuild\The.SampleProject2 1.0.0-info.nupkg");
 
         Assert.Equal(new SemanticVersion(1, 0, 0, "info"), package.Version);
     }
